@@ -365,6 +365,27 @@ textarea:focus{border-color:var(--primary)}
 .hint-links .hl-lbl{font-size:12px;color:var(--text-sub);font-weight:600}
 .hint-links a{padding:4px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:12px;text-decoration:none;color:var(--text);transition:all .12s}
 .hint-links a:hover{border-color:var(--primary);color:var(--primary)}
+/* 提示词典弹窗 */
+.dict-modal{max-width:900px;width:92vw;max-height:88vh}
+.dict-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.dict-tab{padding:5px 14px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;background:#fff;transition:all .15s;user-select:none}
+.dict-tab:hover{border-color:var(--primary);color:var(--primary-dark)}
+.dict-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.dict-content{min-height:200px}
+.dict-category{display:none}
+.dict-category.active{display:block}
+.dict-category h3{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:6px}
+.dict-words{display:flex;flex-wrap:wrap;gap:8px}
+.dict-word{padding:6px 14px;background:#f5f5f5;border:1px solid var(--border);border-radius:6px;font-size:13px;cursor:pointer;transition:all .15s;user-select:none}
+.dict-word:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);transform:translateY(-1px)}
+.dict-word:active{transform:translateY(0)}
+.dict-sites{margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.dict-sites h3{font-size:14px;font-weight:600;margin-bottom:10px}
+.dict-sites table{width:100%;border-collapse:collapse;font-size:12px}
+.dict-sites th,.dict-sites td{padding:6px 10px;border:1px solid var(--border);text-align:left}
+.dict-sites th{background:#f5f5f5;font-weight:600}
+.dict-sites a{color:var(--primary);text-decoration:none}
+.dict-sites a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -375,7 +396,8 @@ textarea:focus{border-color:var(--primary)}
     <div class="subtitle">多次上传网格图分别拆分 · 文字可拖拽/缩放/旋转 · 双文字 · 气泡/贴纸样式 · 提示词典</div>
   </div>
   <div class="header-actions">
-    <a href="../../index.html" style="text-decoration:none;" title="返回主页"><button class="btn btn-outline btn-sm" style="font-size:11px;">🏠 主页</button></a>
+    <a href="../../index.html" class="btn btn-outline btn-sm" style="font-size:11px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;" title="返回主页">🏠 主页</a>
+    <button class="btn btn-outline btn-sm" onclick="openDictModal()" style="font-size:11px;">📖 提示词典</button>
     <button class="btn btn-accent btn-sm" onclick="openBannerModal()">🖼 横幅</button>
     <button class="btn btn-outline btn-sm" onclick="resetAll()">重置</button>
     <button class="btn btn-primary btn-sm" onclick="showReport()" id="btnReport" disabled>📊 生成预览报告</button>
@@ -917,6 +939,31 @@ textarea:focus{border-color:var(--primary)}
         <button class="btn btn-outline btn-sm" onclick="closeEraserModal(true)">取消</button>
         <button class="btn btn-primary btn-sm" onclick="closeEraserModal(false)">✓ 确认</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 提示词典弹窗 -->
+<div class="modal-overlay" id="dictModal">
+  <div class="modal dict-modal">
+    <div class="modal-header">
+      <h2>📖 表情包提示词典 — 含义词分类参考</h2>
+      <button class="modal-close" onclick="closeDictModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="dict-tabs" id="dictTabs"></div>
+      <div class="dict-content" id="dictContent"></div>
+      <div class="dict-sites">
+        <h3>🌐 常用表情包生成图片网站</h3>
+        <table>
+          <thead><tr><th>网站名称</th><th>网址</th><th>特点</th></tr></thead>
+          <tbody id="dictSites"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span style="font-size:12px;color:var(--text-light)">点击词语可直接复制到剪贴板</span>
+      <button class="btn btn-outline btn-sm" onclick="closeDictModal()">关闭</button>
     </div>
   </div>
 </div>
@@ -4651,6 +4698,80 @@ renderHintLinks();
   });
   obs.observe(document.body,{childList:true,subtree:true});
 })();
+
+// ============ 提示词典弹窗 ============
+const DICT_DATA=[
+  {icon:'💬',name:'日常',words:['早安','晚安','在么','人呢','加油','拜拜','再见','保重','吃了吗','干嘛呢','忙吗','好久不见','来啦','收到','好的','在的在的','来了老弟','冒个泡','滴滴','报到']},
+  {icon:'💼',name:'工作',words:['呆子','傻了','好笨','聪明','努力','加班','下班','坐车','听歌','快点','加油','打卡','摸鱼','搬砖','开会','报告','搞定了','没做完','催什么催','又加班']},
+  {icon:'🎉',name:'节日',words:['红包','谢谢老板','新年快乐','生日快乐','圣诞快乐','中秋快乐','端午安康','过年好','恭喜恭喜','大吉大利','万事如意','阖家欢乐','节日快乐','快乐加倍','庆祝一下','沾沾喜气','喜气洋洋','红红火火','迎新春','贺新春']},
+  {icon:'❤️',name:'爱情',words:['爱你','么么','想你了','我爱你','坏蛋','亲爱的','宝贝','心动了','永远爱你','眼里都是你','甜到掉牙','恋爱了','为你心动','在一起','嫁给我','我养你','别走','等你回来','我的唯一','只喜欢你']},
+  {icon:'✈️',name:'旅行',words:['出发','漂亮','好帅','好美','香香的','走起','去哪玩','旅游去','在路上','风景好美','拍一张','打卡','到此一游','玩嗨了','度假模式','说走就走','世界那么大','去看看','远方','出发喽']},
+  {icon:'🥰',name:'暧昧',words:['贴贴','抱抱','举高高','蹭蹭','靠靠','牵手','亲亲','啵啵','抱紧我','贴贴贴','贴贴嘛','要抱抱','举起来','蹭蹭你','抱一下','靠近点','挨着你','腻在一起','黏着你','甜甜的']},
+  {icon:'📚',name:'考试',words:['顺利','求锦鲤','发财','逢考必过','上岸','稳住','能行','蒙的全对','考神附体','加油鸭','必胜','冲鸭','稳了','过了过了','求过','拜考神','金榜题名','旗开得胜','稳操胜券','一举夺魁']},
+  {icon:'😢',name:'情绪',words:['想哭','委屈','难过','伤心','气炸了','好气','忍住','淡定','流泪','哈哈','破防了','emo了','心好累','扛不住了','笑不活了','绷不住了','气鼓鼓','哭唧唧','乐开花','美滋滋']},
+  {icon:'🤪',name:'恶搞',words:['施主请自重','老衲来了','平身','退下吧','跪下','恕你无罪','呆子','二师兄','贫道来也','女侠饶命','大王饶命','师傅别念了','老夫掐指一算','告辞','退朝','臣退了','臣妾做不到','本宫乏了','朕乏了','小的退下']},
+  {icon:'🤤',name:'吃货',words:['好饿啊','馋哭了','流口水了','想吃','开吃','真香','好吃到哭','嗦粉','干饭人','嘎嘎好吃','馋了','深夜放毒','炫饭','炫起来','暴风吸入','饿了饿了','口水直流','美食当前','不能浪费','吃吃吃']},
+  {icon:'👋',name:'打招呼',words:['你好呀','嗨喽','哈喽啊','在吗','在不在','滴滴','冒个泡','来啦来啦','收到请回复','打招呼','报到','我来啦','在的在的','干嘛呢','忙吗','吃了吗','最近咋样','好久不见','又见面啦','来了老弟']},
+  {icon:'🙏',name:'祈祷祝福',words:['保佑保佑','愿一切安好','求锦鲤','逢考必过','许愿','好运加持','平安喜乐','万事顺遂','心想事成','菩萨保佑','求过关','拜托了','天降好运','锦鲤附体','逢凶化吉','前程似锦','福气满满','好运连连','吉星高照','一切都会好的']},
+  {icon:'😂',name:'搞笑玩梗',words:['整活开始','这波操作666','蚌埠住了','栓Q了','绝绝子','社死现场','夺笋呐','yyds','退退退','我真的会谢','下头','上分了','绷不住了','笑不活了','太秀了','6到飞起','高能预警','名场面','名侦探','离谱到家了']},
+  {icon:'👍',name:'点赞支持',words:['太牛了','点赞','学到了','牛批','绝了','高手在民间','太强了','佩服佩服','大佬带带我','可以的','很到位','666','稳的一批','可以的这波','收到','没问题','安排上了','这就去办','包在我身上','干得漂亮']},
+  {icon:'🫠',name:'疲惫摆烂',words:['累了','躺平','摆烂了','不想动了','emo摆烂','咸鱼一条','摆烂大师','能躺绝不坐','让我歇会','电量不足','精神内耗','累成狗','不想上班','想退休','躺尸中','困到模糊','撑不住了','摆烂日常','摆烂第一名','只想睡觉']},
+];
+const DICT_SITES=[
+  {name:'Imgflip',url:'https://imgflip.com/memegenerator',desc:'经典表情包生成器，模板丰富'},
+  {name:'Canva表情包',url:'https://canva.com',desc:'设计感强，模板精美'},
+  {name:'Kapwing',url:'https://kapwing.com/meme-maker',desc:'在线编辑，支持视频表情包'},
+  {name:'Piñata Farms',url:'https://pinatafarm.com',desc:'AI生成表情包，创意十足'},
+  {name:'爱斗图',url:'https://aidoutu.com',desc:'国内表情包网站，中文素材多'},
+  {name:'发表情',url:'https://fabiaoqing.com/maker',desc:'中文表情包制作，模板齐全'},
+  {name:'SOOGIF',url:'https://soogif.com',desc:'GIF表情包制作工具'},
+  {name:'斗图啦',url:'https://doutula.com',desc:'斗图表情包搜索与制作'},
+  {name:'Meme Generator',url:'https://memegenerator.net',desc:'老牌表情包生成网站'},
+  {name:'Memeful',url:'https://memeful.com',desc:'海量表情模板，支持自定义文字'},
+];
+
+function openDictModal(){
+  renderDictTabs();
+  renderDictSites();
+  $('dictModal').classList.add('show');
+}
+function closeDictModal(){
+  $('dictModal').classList.remove('show');
+}
+function renderDictTabs(){
+  const tabs=$('dictTabs');
+  const content=$('dictContent');
+  tabs.innerHTML=DICT_DATA.map((c,i)=>`<span class="dict-tab${i===0?' active':''}" onclick="switchDictTab(${i})">${c.icon} ${c.name}</span>`).join('');
+  content.innerHTML=DICT_DATA.map((c,i)=>`
+    <div class="dict-category${i===0?' active':''}" id="dictCat-${i}">
+      <h3>${c.icon} ${c.name}类 <span style="font-size:12px;color:var(--text-light);font-weight:400">共 ${c.words.length} 个词</span></h3>
+      <div class="dict-words">${c.words.map(w=>`<span class="dict-word" onclick="copyDictWord(this,'${w.replace(/'/g,"\\'")}')" title="点击复制">${w}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+function renderDictSites(){
+  $('dictSites').innerHTML=DICT_SITES.map(s=>`<tr><td>${s.name}</td><td><a href="${s.url}" target="_blank" rel="noopener">${s.url.replace(/^https?:\/\//,'')}</a></td><td>${s.desc}</td></tr>`).join('');
+}
+function switchDictTab(i){
+  document.querySelectorAll('.dict-tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('.dict-category').forEach((c,idx)=>c.classList.toggle('active',idx===i));
+}
+function copyDictWord(el,word){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(word).then(()=>{showCopyFeedback(el,word)});
+  }else{
+    const ta=document.createElement('textarea');ta.value=word;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showCopyFeedback(el,word)}catch(e){}document.body.removeChild(ta);
+  }
+}
+function showCopyFeedback(el,word){
+  const old=el.textContent;
+  el.textContent='✓ 已复制';
+  el.style.background='var(--primary)';
+  el.style.color='#fff';
+  el.style.borderColor='var(--primary)';
+  setTimeout(()=>{el.textContent=old;el.style.background='';el.style.color='';el.style.borderColor=''},1200);
+  showToast('已复制: '+word);
+}
 </script>
 </body>
 </html>
