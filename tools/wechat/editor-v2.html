@@ -211,36 +211,91 @@ input[type=range]{width:84px;accent-color:var(--accent);}
 .pub-platform .p-arrow{color:#cbd5e1; font-size:14px; transition:.12s;}
 .pub-platform:hover .p-arrow{color:#3b82f6; transform:translateX(2px);}
 
-/* ========== 发布状态面板 ========== */
-.pub-status-panel{
-  position:fixed; bottom:20px; right:20px; width:340px;
-  background:#fff; border-radius:14px; box-shadow:0 12px 40px rgba(15,23,42,.18);
-  border:1px solid #e7ecf3; z-index:300; overflow:hidden;
-  transform:translateX(400px); transition:transform .3s cubic-bezier(.25,.46,.45,.94);
+/* ========== 发布引导对话框 ========== */
+.pub-modal-mask{
+  position:fixed; inset:0; background:rgba(15,23,42,.55);
+  z-index:9999; display:none; align-items:center; justify-content:center;
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
 }
-.pub-status-panel.open{transform:translateX(0);}
-.pub-status-head{
-  padding:12px 16px; background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff;
-  display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700;
+.pub-modal-mask.open{display:flex; animation:pubFadeIn .2s ease;}
+@keyframes pubFadeIn{from{opacity:0;}to{opacity:1;}}
+.pub-modal{
+  width:560px; max-width:92vw; max-height:85vh; background:#fff; border-radius:16px;
+  box-shadow:0 24px 64px rgba(15,23,42,.25); display:flex; flex-direction:column;
+  animation:pubSlideUp .3s cubic-bezier(.25,.46,.45,.94);
 }
-.pub-status-head .close-btn{margin-left:auto; cursor:pointer; font-size:16px; opacity:.8; transition:.15s;}
-.pub-status-head .close-btn:hover{opacity:1;}
-.pub-status-body{padding:12px 16px; max-height:300px; overflow-y:auto;}
-.pub-step{
-  display:flex; align-items:center; gap:10px; padding:8px 0;
-  border-bottom:1px solid #f1f5f9; font-size:12px;
+@keyframes pubSlideUp{from{transform:translateY(30px) scale(.97);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+.pub-modal-head{
+  padding:18px 24px; display:flex; align-items:center; gap:12px;
+  border-bottom:1px solid #e7ecf3; flex-shrink:0;
 }
-.pub-step:last-child{border-bottom:none;}
-.pub-step .step-icon{
-  width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size:12px; flex-shrink:0; transition:.2s;
+.pub-modal-title{display:flex; align-items:center; gap:10px; font-size:16px; font-weight:700; color:#1e293b;}
+.pub-modal-icon{
+  width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; color:#fff; flex-shrink:0;
 }
-.pub-step.pending .step-icon{background:#f1f5f9; color:#94a3b8;}
-.pub-step.active .step-icon{background:#dbeafe; color:#3b82f6; animation:pulse 1.5s infinite;}
-.pub-step.done .step-icon{background:#dcfce7; color:#16a34a;}
-.pub-step.error .step-icon{background:#fef2f2; color:#dc2626;}
-.pub-step .step-text{flex:1; color:#334155;}
-.pub-step .step-info{font-size:11px; color:#94a3b8;}
+.pub-modal-close{margin-left:auto; cursor:pointer; font-size:20px; color:#94a3b8; transition:.15s; padding:4px 8px;}
+.pub-modal-close:hover{color:#ef4444;}
+.pub-modal-body{padding:20px 24px; overflow-y:auto; flex:1;}
+.pub-modal-foot{padding:14px 24px; border-top:1px solid #e7ecf3; display:flex; justify-content:flex-end; gap:10px; flex-shrink:0;}
+.pub-btn-cancel{
+  padding:8px 20px; border:1px solid #e2e8f0; background:#fff; border-radius:8px;
+  font-size:13px; color:#64748b; cursor:pointer; transition:.15s;
+}
+.pub-btn-cancel:hover{background:#f8fafc; border-color:#cbd5e1;}
+
+/* 平台信息条 */
+.pub-platform-info{
+  display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px;
+  background:#f8fafc; margin-bottom:16px; font-size:12px; color:#64748b;
+}
+.pub-platform-info b{color:#334155;}
+
+/* 步骤列表 */
+.pub-step-list{display:flex; flex-direction:column; gap:2px;}
+.pub-step-row{
+  display:flex; align-items:flex-start; gap:12px; padding:10px 8px;
+  border-radius:8px; transition:.15s;
+}
+.pub-step-row:hover{background:#f8fafc;}
+.pub-step-row .step-num{
+  width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; flex-shrink:0; transition:.2s;
+  background:#f1f5f9; color:#94a3b8;
+}
+.pub-step-row.active .step-num{background:#dbeafe; color:#3b82f6;}
+.pub-step-row.done .step-num{background:#dcfce7; color:#16a34a;}
+.pub-step-row.error .step-num{background:#fef2f2; color:#dc2626;}
+.pub-step-row .step-content{flex:1; min-width:0;}
+.pub-step-row .step-label{font-size:13px; color:#334155; line-height:1.5;}
+.pub-step-row.done .step-label{color:#16a34a;}
+.pub-step-row .step-btn{
+  padding:5px 14px; border:1px solid #3b82f6; background:#eff6ff; border-radius:6px;
+  font-size:12px; color:#3b82f6; cursor:pointer; transition:.15s; white-space:nowrap; flex-shrink:0;
+}
+.pub-step-row .step-btn:hover{background:#3b82f6; color:#fff;}
+.pub-step-row .step-btn.done{background:#dcfce7; border-color:#16a34a; color:#16a34a; pointer-events:none;}
+.pub-step-row .step-btn.open-btn{border-color:#f59e0b; background:#fffbeb; color:#f59e0b;}
+.pub-step-row .step-btn.open-btn:hover{background:#f59e0b; color:#fff;}
+.pub-step-row .step-btn.download-btn{border-color:#8b5cf6; background:#f5f3ff; color:#8b5cf6;}
+.pub-step-row .step-btn.download-btn:hover{background:#8b5cf6; color:#fff;}
+
+/* 提示框 */
+.pub-tips{
+  margin-top:16px; padding:12px 14px; border-radius:10px; background:#fffbeb;
+  border:1px solid #fde68a; font-size:12px; color:#92400e; line-height:1.8;
+}
+.pub-tips-title{font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:4px;}
+.pub-tips ul{margin:0; padding-left:18px;}
+.pub-tips li{margin:2px 0;}
+
+/* 插件状态提示 */
+.pub-ext-hint{
+  margin-top:12px; padding:10px 14px; border-radius:8px; font-size:12px;
+  display:flex; align-items:center; gap:8px;
+}
+.pub-ext-hint.on{background:#f0fdf4; color:#16a34a;}
+.pub-ext-hint.off{background:#fef2f2; color:#dc2626;}
 
 /* 图片拖拽条 */
 #imgStrip{display:flex;gap:5px;flex-wrap:wrap;padding:5px 6px;min-height:40px;max-height:60px;overflow-y:auto;border:2px dashed #d1d5db;border-radius:8px;background:#fafbfc;transition:all .2s;margin:4px 10px;align-items:center;position:relative;flex-shrink:0}
@@ -472,13 +527,21 @@ input[type=range]{width:84px;accent-color:var(--accent);}
 
 <div id="toast"></div>
 
-<!-- 发布状态面板 -->
-<div class="pub-status-panel" id="pubStatusPanel">
-  <div class="pub-status-head">
-    <span id="pubStatusTitle">🚀 发布进度</span>
-    <span class="close-btn" onclick="closePubStatus()">✕</span>
+<!-- 发布引导对话框 -->
+<div class="pub-modal-mask" id="pubStatusPanel">
+  <div class="pub-modal">
+    <div class="pub-modal-head" id="pubModalHead">
+      <div class="pub-modal-title">
+        <span class="pub-modal-icon" id="pubStatusIcon">🚀</span>
+        <span id="pubStatusTitle">发布引导</span>
+      </div>
+      <span class="pub-modal-close" onclick="closePubStatus()">✕</span>
+    </div>
+    <div class="pub-modal-body" id="pubStatusBody"></div>
+    <div class="pub-modal-foot">
+      <button class="pub-btn-cancel" onclick="closePubStatus()">关闭</button>
+    </div>
   </div>
-  <div class="pub-status-body" id="pubStatusBody"></div>
 </div>
 
 <input type="file" id="mdFile" accept=".md,.txt,.markdown" class="hidden">
@@ -1419,27 +1482,146 @@ $('#btnCopy').onclick=async ()=>{
   if(ok) toast('已复制排版内容，可粘贴到公众号后台','ok'); else toast('复制失败，请手动复制','err');
 };
 /* ============================================================
-   十一(补)、多平台发布系统 — 兼容轻狐AI发布助手插件
-   通信协议：window.postMessage
-   - 页面发送 CONTENTAI_PUBLISH → 插件接收并转发到目标平台
-   - 页面发送 CONTENTAI_CHECK_EXTENSION → 检测插件是否可用
-   - 插件回传 CONTENTAI_EXTENSION_READY → 插件已就绪
-   - 插件回传 CONTENTAI_PUBLISH_RESULT → 发布请求结果
-   - 插件回传 CONTENTAI_FILL_COMPLETE → 内容填充完成
-   - 插件回传 CONTENTAI_PUBLISH_COMPLETE → 发布完成
+   十一(补)、多平台发布系统 — 兼容轻狐AI发布助手插件 v2.0.0
+   通信协议：window.postMessage（标准 content script 注入模式）
+   页面发送 CONTENTAI_PUBLISH → 插件 injector 转发给 background
+   → background 打开平台页 → 平台 content script 自动填充内容
    ============================================================ */
 
-// 发布平台定义
+// 发布平台定义（含直接发布 URL、操作步骤、内容格式）
 const PUBLISH_PLATFORMS = [
-  {id:'wechat',     name:'微信公众号', icon:'💬', bg:'#07c160', desc:'复制标题正文+上传封面图'},
-  {id:'xiaohongshu', name:'小红书',    icon:'📕', bg:'#fe2c55', desc:'自动填充标题正文+图集上传'},
-  {id:'douyin',      name:'抖音',      icon:'🎵', bg:'#161823', desc:'复制标题正文+话题标签'},
-  {id:'bilibili',    name:'B站专栏',   icon:'📺', bg:'#fb7299', desc:'复制标题正文+话题标签'},
-  {id:'toutiao',     name:'今日头条',   icon:'📰', bg:'#f04142', desc:'复制标题正文到编辑器'},
-  {id:'zhihu',       name:'知乎专栏',   icon:'💡', bg:'#0084ff', desc:'复制标题正文+封面图+话题'},
-  {id:'aliyun',      name:'阿里云社区', icon:'☁️', bg:'#ff6a00', desc:'Markdown正文+封面图+标签'},
-  {id:'csdn',        name:'CSDN',     icon:'💻', bg:'#fc5531', desc:'Markdown正文+图片转图床'},
-  {id:'baijiahao',   name:'百家号',    icon:'🔍', bg:'#2932e1', desc:'复制标题正文到编辑器'},
+  {id:'wechat', name:'微信公众号', icon:'💬', bg:'#07c160', desc:'HTML正文+封面图',
+   url:'https://mp.weixin.qq.com/cgi-bin/appmsg?begin=0&count=10&type=10&action=list',
+   contentFormat:'html',
+   steps:[
+     {text:'复制文章标题', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制HTML正文（保留排版）', btn:'copyContent', btnText:'复制正文', fmt:'html'},
+     {text:'打开微信公众号编辑器', btn:'openPage', btnText:'打开页面'},
+     {text:'点击「新建图文」'},
+     {text:'粘贴标题（≤100字，Ctrl+V）'},
+     {text:'粘贴正文内容（Ctrl+V 保留排版）'},
+     {text:'下载并上传封面图', btn:'downloadCover', btnText:'下载封面图'},
+     {text:'完成发布'},
+   ],
+   tips:['微信编辑器支持富文本粘贴，直接 Ctrl+V 即可保留排版','标题不能超过100字','封面图建议尺寸 900×383 或 2.35:1'],
+  },
+  {id:'xiaohongshu', name:'小红书', icon:'📕', bg:'#fe2c55', desc:'纯文本+图集上传',
+   url:'https://creator.xiaohongshu.com/publish/publish?from=tab_switch&target=image',
+   contentFormat:'text',
+   steps:[
+     {text:'下载文章图片（用于图集上传）', btn:'downloadImages', btnText:'下载图片'},
+     {text:'复制文章标题（≤20字）', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制纯文本正文（≤1000字）', btn:'copyContent', btnText:'复制正文', fmt:'text'},
+     {text:'打开小红书创作者页', btn:'openPage', btnText:'打开页面'},
+     {text:'选择「上传图文」'},
+     {text:'上传图片（图集，最多9张）'},
+     {text:'粘贴标题（≤20字）'},
+     {text:'粘贴正文（≤1000字）'},
+     {text:'添加话题标签（# 开头）'},
+     {text:'完成发布'},
+   ],
+   tips:['小红书标题不能超过20字','正文不能超过1000字','图片最多9张，建议正方形或3:4','内容格式为纯文本，不支持HTML'],
+  },
+  {id:'douyin', name:'抖音', icon:'🎵', bg:'#161823', desc:'HTML正文+话题标签',
+   url:'https://creator.douyin.com/creator-micro/content/post/article?enter_from=publish_page&media_type=article&type=new',
+   contentFormat:'html',
+   steps:[
+     {text:'复制文章标题（≤30字）', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制HTML正文（保留排版）', btn:'copyContent', btnText:'复制正文', fmt:'html'},
+     {text:'打开抖音创作者中心', btn:'openPage', btnText:'打开页面'},
+     {text:'粘贴标题（≤30字）'},
+     {text:'粘贴正文内容（Ctrl+V 保留排版）'},
+     {text:'添加话题标签（≤5个，# 开头）'},
+     {text:'手动上传封面图'},
+     {text:'完成发布'},
+   ],
+   tips:['抖音文章标题不能超过30字','话题标签最多5个','封面图建议尺寸 1080×810'],
+  },
+  {id:'bilibili', name:'B站专栏', icon:'📺', bg:'#fb7299', desc:'HTML正文+话题标签',
+   url:'https://member.bilibili.com/york/read-editor',
+   contentFormat:'html',
+   steps:[
+     {text:'复制文章标题', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制HTML正文（保留排版）', btn:'copyContent', btnText:'复制正文', fmt:'html'},
+     {text:'打开B站专栏编辑器', btn:'openPage', btnText:'打开页面'},
+     {text:'粘贴标题'},
+     {text:'粘贴正文内容（Ctrl+V 保留排版）'},
+     {text:'添加话题标签（≤10个）'},
+     {text:'完成发布'},
+   ],
+   tips:['B站专栏支持富文本粘贴','话题标签最多10个','可设置专栏封面图'],
+  },
+  {id:'toutiao', name:'今日头条', icon:'📰', bg:'#f04142', desc:'HTML正文',
+   url:'https://mp.toutiao.com/profile_v4/graphic/publish',
+   contentFormat:'html',
+   steps:[
+     {text:'复制文章标题', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制HTML正文（保留排版）', btn:'copyContent', btnText:'复制正文', fmt:'html'},
+     {text:'打开今日头条发布页', btn:'openPage', btnText:'打开页面'},
+     {text:'粘贴标题'},
+     {text:'粘贴正文内容（Ctrl+V 保留排版）'},
+     {text:'完成发布'},
+   ],
+   tips:['今日头条支持富文本粘贴','标题建议30字以内效果最佳','可添加封面图（三图模式效果更好）'],
+  },
+  {id:'zhihu', name:'知乎专栏', icon:'💡', bg:'#0084ff', desc:'HTML正文+封面图+话题',
+   url:'https://zhuanlan.zhihu.com/write',
+   contentFormat:'html',
+   steps:[
+     {text:'复制文章标题', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制HTML正文（保留排版）', btn:'copyContent', btnText:'复制正文', fmt:'html'},
+     {text:'下载封面图', btn:'downloadCover', btnText:'下载封面图'},
+     {text:'打开知乎专栏写作页', btn:'openPage', btnText:'打开页面'},
+     {text:'粘贴标题'},
+     {text:'粘贴正文内容（Ctrl+V 保留排版）'},
+     {text:'上传封面图'},
+     {text:'添加话题标签（≤5个）'},
+     {text:'完成发布'},
+   ],
+   tips:['知乎专栏支持富文本粘贴','话题标签最多5个','封面图建议尺寸 1280×720'],
+  },
+  {id:'aliyun', name:'阿里云社区', icon:'☁️', bg:'#ff6a00', desc:'Markdown正文+封面图+标签',
+   url:'https://developer.aliyun.com/article/new',
+   contentFormat:'markdown',
+   steps:[
+     {text:'复制文章标题', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制Markdown正文', btn:'copyContent', btnText:'复制正文', fmt:'markdown'},
+     {text:'下载封面图', btn:'downloadCover', btnText:'下载封面图'},
+     {text:'打开阿里云社区发文页', btn:'openPage', btnText:'打开页面'},
+     {text:'粘贴标题'},
+     {text:'粘贴Markdown正文（确保编辑器为Markdown模式）'},
+     {text:'上传封面图'},
+     {text:'添加标签（≤5个）'},
+     {text:'完成发布'},
+   ],
+   tips:['阿里云社区使用Markdown格式','粘贴前确保编辑器切换到Markdown模式','标签最多5个'],
+  },
+  {id:'csdn', name:'CSDN', icon:'💻', bg:'#fc5531', desc:'Markdown正文',
+   url:'https://editor.csdn.net/md',
+   contentFormat:'markdown',
+   steps:[
+     {text:'复制文章标题', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制Markdown正文', btn:'copyContent', btnText:'复制正文', fmt:'markdown'},
+     {text:'打开CSDN编辑器', btn:'openPage', btnText:'打开页面'},
+     {text:'粘贴标题'},
+     {text:'粘贴Markdown正文'},
+     {text:'完成发布'},
+   ],
+   tips:['CSDN使用Markdown格式','编辑器默认为Markdown模式','图片需使用CSDN图床'],
+  },
+  {id:'baijiahao', name:'百家号', icon:'🔍', bg:'#2932e1', desc:'HTML正文',
+   url:'https://baijiahao.baidu.com/builder/rc/edit?type=news&is_from_cms=1',
+   contentFormat:'html',
+   steps:[
+     {text:'复制文章标题（≤40字）', btn:'copyTitle', btnText:'复制标题'},
+     {text:'复制HTML正文（保留排版）', btn:'copyContent', btnText:'复制正文', fmt:'html'},
+     {text:'打开百家号编辑器', btn:'openPage', btnText:'打开页面'},
+     {text:'粘贴标题（≤40字）'},
+     {text:'粘贴正文内容（Ctrl+V 保留排版）'},
+     {text:'完成发布'},
+   ],
+   tips:['百家号标题不能超过40字','支持富文本粘贴','可添加封面图'],
+  },
 ];
 
 // 插件状态
@@ -1459,12 +1641,10 @@ function renderPlatformList(){
     </div>
   `).join('');
   $('#platformList').innerHTML = html;
-  // 绑定点击
   $$('.pub-platform').forEach(el=>{
     el.onclick = (e)=>{
       e.stopPropagation();
-      const platform = el.dataset.platform;
-      publishToPlatform(platform);
+      publishToPlatform(el.dataset.platform);
     };
   });
 }
@@ -1473,12 +1653,9 @@ function renderPlatformList(){
 $('#btnPublish').onclick = (e)=>{
   e.stopPropagation();
   $('#pubDropdown').classList.toggle('open');
-  if(!extensionReady){
-    // 每次打开时重新检测
-    window.postMessage({type:'CONTENTAI_CHECK_EXTENSION'}, '*');
-  }
+  // 每次打开时重新检测插件
+  detectExtension();
 };
-// 点击外部关闭下拉
 document.addEventListener('click', (e)=>{
   if(!e.target.closest('.pub-wrap')){
     $('#pubDropdown').classList.remove('open');
@@ -1486,16 +1663,26 @@ document.addEventListener('click', (e)=>{
 });
 
 // 更新插件状态 UI
-function updateExtStatus(ready){
+function updateExtStatus(ready, method){
   extensionReady = ready;
   const el = $('#extStatus');
   if(ready){
     el.className = 'pub-ext-status on';
-    el.innerHTML = '<span class="dot"></span> 插件已就绪';
+    el.innerHTML = '<span class="dot"></span> 插件已就绪' + (method ? ' (' + method + ')' : '');
   }else{
     el.className = 'pub-ext-status off';
     el.innerHTML = '<span class="dot"></span> 插件未检测';
   }
+}
+
+/* ===== 插件检测（标准 postMessage 协议）===== */
+function detectExtension(){
+  // 通过 postMessage 检测 contentai-injector.js 是否注入
+  window.postMessage({type:'CONTENTAI_CHECK_EXTENSION'}, '*');
+  // 给 1.5 秒响应时间
+  setTimeout(()=>{
+    if(!extensionReady) updateExtStatus(false);
+  }, 1500);
 }
 
 // 构造文章数据对象（符合插件 article 格式）
@@ -1505,163 +1692,295 @@ function buildArticleData(){
   const contentText = previewBody.innerText;
   const contentMd = mdMode ? mdArea.value : htmlToMd(editor);
 
-  // 提取文章中的图片 URL（用于封面/图集）
   const imgs = Array.from(previewBody.querySelectorAll('img'));
   const galleryImages = imgs.map(img=>img.src).filter(src=>src && !src.startsWith('data:'));
-
-  // 第一张图作为封面（如果没有则空）
   const coverImage = galleryImages.length > 0 ? galleryImages[0] : '';
 
   return {
     id: 'local-' + Date.now(),
     title: title,
-    content: contentMd,           // Markdown 原文
-    content_html: contentHtml,    // 预转换 HTML
-    content_text: contentText,    // 预转换纯文本
+    content: contentMd,
+    content_html: contentHtml,
+    content_text: contentText,
     cover_image: coverImage,
     gallery_images: galleryImages,
     tags: '',
   };
 }
 
-// 发布到指定平台
-function publishToPlatform(platform){
+// 根据平台格式准备内容
+function prepareContentForPlatform(platform, article){
+  const platformInfo = PUBLISH_PLATFORMS.find(p=>p.id===platform);
+  if(!platformInfo) return {text: '', html: ''};
+  switch(platformInfo.contentFormat){
+    case 'html':     return {text: article.content_text, html: article.content_html};
+    case 'markdown': return {text: article.content, html: article.content};
+    case 'text':     return {text: article.content_text, html: article.content_text};
+    default:         return {text: article.content_text, html: article.content_html};
+  }
+}
+
+// 复制指定内容到剪贴板
+async function copyToClipboard(text, html){
+  try{
+    if(navigator.clipboard && window.ClipboardItem){
+      const items = {};
+      if(html) items['text/html'] = new Blob([html],{type:'text/html'});
+      items['text/plain'] = new Blob([text],{type:'text/plain'});
+      const item = new ClipboardItem(items);
+      await navigator.clipboard.write([item]);
+      return true;
+    }
+  }catch(e){ /* fallback */ }
+  try{
+    const ta=document.createElement('div'); ta.contentEditable=true;
+    ta.innerHTML=html||text; ta.style.position='fixed'; ta.style.top='-9999px';
+    document.body.appendChild(ta);
+    const r=document.createRange(); r.selectNodeContents(ta);
+    const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    const ok=document.execCommand('copy'); document.body.removeChild(ta);
+    sel.removeAllRanges();
+    return ok;
+  }catch(e){ return false; }
+}
+
+// 当前发布状态
+let currentArticle = null;
+let currentPlatformInfo = null;
+
+// 发布到指定平台 — 通过 postMessage 协议触发插件
+async function publishToPlatform(platform){
   if(!previewBody.innerText.trim()){
     toast('内容为空，请先编辑','err');
     return;
   }
-
-  // 关闭下拉
   $('#pubDropdown').classList.remove('open');
-
   const platformInfo = PUBLISH_PLATFORMS.find(p=>p.id===platform);
   if(!platformInfo) return;
 
-  if(!extensionReady){
-    toast('⚠️ 未检测到发布助手插件，请先安装轻狐AI发布助手插件','err');
-    // 仍然发送请求（插件可能在但未响应，给一次机会）
-  }
-
   currentPublishPlatform = platform;
+  currentPlatformInfo = platformInfo;
+  currentArticle = buildArticleData();
 
-  // 构造文章数据
-  const article = buildArticleData();
-
-  // 显示发布状态面板
-  showPubStatus(platformInfo.name, [
-    {text:'准备发布到' + platformInfo.name, status:'done'},
-    {text:'发送文章数据到插件', status:'active'},
-    {text:'等待插件打开平台页面', status:'pending'},
-    {text:'内容填充', status:'pending'},
-    {text:'发布完成', status:'pending'},
-  ]);
-
-  // 通过 postMessage 发送发布请求
+  // 通过标准 postMessage 协议通知插件发布
+  // contentai-injector.js 会接收并转发给 background service worker
   window.postMessage({
     type: 'CONTENTAI_PUBLISH',
-    article: article,
+    article: currentArticle,
     platform: platform,
   }, '*');
 
-  toast('🚀 正在发布到' + platformInfo.name + '…', '');
+  // 显示分步引导对话框（同时作为发布进度面板）
+  showPublishDialog(platformInfo);
+
+  // 如果插件已就绪，提示用户
+  if(extensionReady){
+    toast('🚀 插件正在发布到' + platformInfo.name, '');
+  }
 }
 
-// 发布状态面板
-function showPubStatus(platformName, steps){
-  $('#pubStatusTitle').textContent = '🚀 发布到' + platformName;
-  const html = steps.map((s,i)=>`
-    <div class="pub-step ${s.status}" data-step="${i}">
-      <div class="step-icon">${s.status==='done'?'✓':s.status==='active'?'⏳':s.status==='error'?'✕':(i+1)}</div>
-      <div class="step-text">${s.text}</div>
+// 显示发布引导对话框
+function showPublishDialog(platformInfo){
+  // 设置头部
+  $('#pubStatusIcon').textContent = platformInfo.icon;
+  $('#pubStatusIcon').style.background = platformInfo.bg;
+  $('#pubStatusTitle').textContent = '发布到' + platformInfo.name;
+
+  // 构建步骤列表
+  const stepsHtml = platformInfo.steps.map((step, i)=>{
+    const btnHtml = step.btn ? `<button class="step-btn ${step.btn==='openPage'?'open-btn':step.btn.startsWith('download')?'download-btn':''}" data-step="${i}" data-action="${step.btn}" data-fmt="${step.fmt||''}">${step.btnText}</button>` : '';
+    return `
+      <div class="pub-step-row" data-step="${i}">
+        <div class="step-num">${i+1}</div>
+        <div class="step-content">
+          <div class="step-label">${step.text}</div>
+        </div>
+        ${btnHtml}
+      </div>
+    `;
+  }).join('');
+
+  // 构建提示
+  const tipsHtml = (platformInfo.tips && platformInfo.tips.length) ? `
+    <div class="pub-tips">
+      <div class="pub-tips-title">⚠️ ${platformInfo.name}注意事项</div>
+      <ul>${platformInfo.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
     </div>
-  `).join('');
-  $('#pubStatusBody').innerHTML = html;
+  ` : '';
+
+  // 插件状态提示
+  const extHint = extensionReady
+    ? `<div class="pub-ext-hint on">✅ 插件已就绪，可自动填充部分内容</div>`
+    : `<div class="pub-ext-hint off">⚠️ 插件未检测到，请手动按步骤操作（复制→粘贴）</div>`;
+
+  // 平台信息
+  const fmtLabel = {html:'富文本HTML', markdown:'Markdown', text:'纯文本'}[platformInfo.contentFormat] || '';
+  const infoHtml = `
+    <div class="pub-platform-info">
+      <b>${platformInfo.name}</b>
+      <span>·</span>
+      <span>内容格式：<b>${fmtLabel}</b></span>
+      <span>·</span>
+      <span>${platformInfo.desc}</span>
+    </div>
+  `;
+
+  $('#pubStatusBody').innerHTML = infoHtml + `<div class="pub-step-list">${stepsHtml}</div>` + tipsHtml + extHint;
   $('#pubStatusPanel').classList.add('open');
+
+  // 绑定步骤按钮事件
+  $$('#pubStatusBody .step-btn').forEach(btn=>{
+    btn.onclick = async (e)=>{
+      e.stopPropagation();
+      const stepIdx = parseInt(btn.dataset.step);
+      const action = btn.dataset.action;
+      const fmt = btn.dataset.fmt;
+      await handleStepAction(action, fmt, stepIdx, btn);
+    };
+  });
 }
 
-function updatePubStep(stepIndex, status, info){
-  const step = $$('#pubStatusBody .pub-step')[stepIndex];
-  if(!step) return;
-  step.className = 'pub-step ' + status;
-  const icon = step.querySelector('.step-icon');
-  if(icon){
-    icon.textContent = status==='done'?'✓':status==='active'?'⏳':status==='error'?'✕':(stepIndex+1);
-  }
-  if(info){
-    let infoEl = step.querySelector('.step-info');
-    if(!infoEl){
-      infoEl = document.createElement('div');
-      infoEl.className = 'step-info';
-      step.appendChild(infoEl);
+// 处理步骤按钮操作
+async function handleStepAction(action, fmt, stepIdx, btn){
+  if(!currentArticle) return;
+
+  switch(action){
+    case 'copyTitle': {
+      const title = currentArticle.title || '未命名文章';
+      const ok = await copyToClipboard(title, title);
+      if(ok){
+        markStepDone(stepIdx, btn);
+        toast('📋 标题已复制', 'ok');
+      }else{
+        toast('❌ 复制失败', 'err');
+      }
+      break;
     }
-    infoEl.textContent = info;
+    case 'copyContent': {
+      const content = prepareContentForPlatform(currentPublishPlatform, currentArticle);
+      const ok = await copyToClipboard(content.text, content.html);
+      if(ok){
+        markStepDone(stepIdx, btn);
+        const fmtName = {html:'HTML正文', markdown:'Markdown正文', text:'纯文本正文'}[fmt] || '正文';
+        toast('📋 ' + fmtName + '已复制', 'ok');
+      }else{
+        toast('❌ 复制失败', 'err');
+      }
+      break;
+    }
+    case 'openPage': {
+      if(currentPlatformInfo){
+        window.open(currentPlatformInfo.url, '_blank');
+        markStepDone(stepIdx, btn);
+        toast('✅ 已打开' + currentPlatformInfo.name + '页面', 'ok');
+      }
+      break;
+    }
+    case 'downloadCover': {
+      if(currentArticle.cover_image){
+        downloadImageFromUrl(currentArticle.cover_image, 'cover.jpg');
+        markStepDone(stepIdx, btn);
+        toast('📦 封面图下载中…', 'ok');
+      }else{
+        toast('⚠️ 未检测到封面图', 'err');
+      }
+      break;
+    }
+    case 'downloadImages': {
+      const imgs = currentArticle.gallery_images || [];
+      if(imgs.length === 0){
+        toast('⚠️ 未检测到图片', 'err');
+        return;
+      }
+      imgs.forEach((url, i)=>{
+        setTimeout(()=>downloadImageFromUrl(url, `image_${i+1}.jpg`), i * 300);
+      });
+      markStepDone(stepIdx, btn);
+      toast(`📦 正在下载 ${imgs.length} 张图片…`, 'ok');
+      break;
+    }
   }
+}
+
+// 标记步骤完成
+function markStepDone(stepIdx, btn){
+  const row = $$('#pubStatusBody .pub-step-row')[stepIdx];
+  if(row){
+    row.classList.add('done');
+    const num = row.querySelector('.step-num');
+    if(num) num.textContent = '✓';
+  }
+  if(btn){
+    btn.classList.add('done');
+    btn.textContent = '✅ 已完成';
+  }
+}
+
+// 下载图片（通过 fetch → blob → download）
+function downloadImageFromUrl(url, filename){
+  fetch(url, {mode:'cors', credentials:'omit'})
+    .then(r=>r.blob())
+    .then(blob=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+    })
+    .catch(()=>{
+      // 降级：直接打开图片 URL
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.target = '_blank';
+      a.click();
+    });
 }
 
 function closePubStatus(){
   $('#pubStatusPanel').classList.remove('open');
+  currentPublishPlatform = null;
 }
 
-// 监听来自插件的 postMessage
+// 监听来自插件 content script 的 postMessage
 window.addEventListener('message', (event)=>{
   if(event.source !== window) return;
   const data = event.data;
 
-  // 插件就绪通知
   if(data.type === 'CONTENTAI_EXTENSION_READY'){
-    updateExtStatus(true);
-    console.log('[发布助手] 插件已就绪');
+    if(!extensionReady){
+      updateExtStatus(true, '注入');
+      console.log('[发布助手] 插件已就绪（content script）');
+    }
   }
 
-  // 发布请求结果
   if(data.type === 'CONTENTAI_PUBLISH_RESULT'){
     if(data.success){
-      updatePubStep(1, 'done', '数据已发送');
-      updatePubStep(2, 'active', '正在打开平台页面…');
       toast('✅ 插件已接收，正在打开平台页面…', 'ok');
     }else{
-      updatePubStep(1, 'error', data.error || '发送失败');
-      toast('❌ 发布失败：' + (data.error || '未知错误'), 'err');
+      toast('⚠️ 插件响应失败，请手动操作', 'err');
     }
   }
 
-  // 内容填充完成
   if(data.type === 'CONTENTAI_FILL_COMPLETE'){
     if(data.success){
-      updatePubStep(2, 'done');
-      updatePubStep(3, 'done', '内容已填充');
-      updatePubStep(4, 'active', '请在平台页面确认发布');
       toast('✅ 内容已填充到' + (data.platform || '') + '，请在平台页面确认发布', 'ok');
     }else{
-      updatePubStep(3, 'error', data.error || '填充失败');
       toast('⚠️ 填充失败：' + (data.error || '请手动粘贴'), 'err');
-      // 降级：复制到剪贴板供手动粘贴
-      copyArticle().then(ok=>{
-        if(ok) toast('📋 内容已复制到剪贴板，请手动粘贴', 'ok');
-      });
     }
   }
 
-  // 发布完成
   if(data.type === 'CONTENTAI_PUBLISH_COMPLETE'){
-    updatePubStep(4, 'done', data.url || '已完成');
     toast('🎉 发布完成！' + (data.platform || ''), 'ok');
-    // 3秒后自动关闭面板
-    setTimeout(closePubStatus, 3000);
+    setTimeout(closePubStatus, 2000);
   }
 });
 
 // 页面加载后检测插件
 window.addEventListener('load', ()=>{
   renderPlatformList();
-  // 发送检测消息（插件注入后会响应 CONTENTAI_EXTENSION_READY）
-  window.postMessage({type:'CONTENTAI_CHECK_EXTENSION'}, '*');
-  // 3秒后如果未响应，标记为未检测
-  setTimeout(()=>{
-    if(!extensionReady){
-      updateExtStatus(false);
-    }
-  }, 3000);
+  // 延迟检测，避免和页面渲染冲突
+  setTimeout(()=>detectExtension(), 500);
 });
 
 function download(filename, content, mime='text/plain'){

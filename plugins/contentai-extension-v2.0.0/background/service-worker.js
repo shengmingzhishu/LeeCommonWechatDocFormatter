@@ -8,32 +8,6 @@ importScripts('../config.js', '../lib/url-utils.js');
 
 /* ========== 消息监听 ========== */
 
-// 监听来自外部网页的直接消息（externally_connectable）
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-  console.log('[轻狐AI] 收到外部消息:', message.action || message.type, '来自:', sender.url);
-
-  if (message.action === 'PUBLISH_ARTICLE') {
-    handlePublishArticle(message.article, message.platform, null);
-    sendResponse({ ok: true, msg: '正在打开发布页面...' });
-    return;
-  }
-
-  if (message.action === 'CHECK_EXTENSION') {
-    sendResponse({ ok: true, version: EXTENSION_VERSION, msg: '插件已就绪' });
-    return;
-  }
-
-  if (message.action === 'SAVE_TOKEN') {
-    chrome.storage.local.set({ token: message.token, tokenUpdatedAt: Date.now() }, () => {
-      console.log('[轻狐AI] 登录 Token 已保存（外部）');
-    });
-    sendResponse({ ok: true });
-    return;
-  }
-
-  sendResponse({ ok: false, error: '未知的消息类型' });
-});
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // 来自 contentai-injector 的发布请求
   if (message.action === 'PUBLISH_ARTICLE') {
@@ -298,7 +272,6 @@ function notifyContentaiPage(message) {
         return tab.url.startsWith(prefix);
       });
       if (isContentai) {
-        // 尝试通过 content script 通知
         chrome.tabs.sendMessage(tab.id, message).catch(() => {
           // content script 可能未注入，忽略错误
         });

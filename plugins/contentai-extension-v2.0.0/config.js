@@ -155,6 +155,8 @@ const CONTENTAI_URL_PATTERNS = [
   'http://localhost:5500',
   'http://localhost:3000',
   'http://wwork.hnzant.com',
+  'https://shengmingzhishu.github.io',
+  'file://',
 ];
 
 // 插件版本号（与 manifest.json 同步）
